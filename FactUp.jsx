@@ -893,3 +893,26 @@ export default function App() {
   if(screen==="profile") return <ProfileScreen onBack={()=>nav("menu")} player={player} th={th} t={t}/>;
   return <MenuScreen onNav={nav} player={player} th={th} t={t}/>;
 }
+
+// ===================== HTML TEMPLATE =====================
+const htmlTemplate = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactUp - React Game</title>
+    <link rel="stylesheet" href="style.css"> <!-- You can add your own CSS file here -->
+</head>
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <script type="text/babel" src="App.js"></script>
+</body>
+</html>
+`;
+
+// You can use `htmlTemplate` variable to save as an HTML file programmatically or embed it in your application as needed.
