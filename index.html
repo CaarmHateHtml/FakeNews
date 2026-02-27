@@ -1,4 +1,25 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FactUp</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; }
+    input[type=range] { cursor: pointer; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
 // ===================== SETTINGS =====================
 const DEFAULT_SETTINGS = {
@@ -41,6 +62,7 @@ const T = {
     gameSpeedDesc:"Ảnh hưởng tốc độ lan truyền tin giả",
     notifDesc:"Hiện popup khi có tin mới khẩn cấp",
     autoSaveDesc:"Tự động lưu tiến trình mỗi 60 giây",
+    gems:"gems", tickets:"tickets",
   },
   en: {
     appName:"FactUp", menu:"Menu", simulation:"Simulation", practice:"Practice",
@@ -75,6 +97,7 @@ const T = {
     gameSpeedDesc:"Affects how fast fake news spreads",
     notifDesc:"Show popup when urgent news appears",
     autoSaveDesc:"Auto-save progress every 60 seconds",
+    gems:"gems", tickets:"tickets",
   }
 };
 
@@ -231,7 +254,7 @@ function Card({children,th,style={}}) {
 function SettingsScreen({onBack,settings,onSave}) {
   const [local,setLocal]=useState({...settings});
   const [savedMsg,setSavedMsg]=useState(false);
-  const [resetStep,setResetStep]=useState(0); // 0=idle,1=confirm,2=done
+  const [resetStep,setResetStep]=useState(0);
   const th=getTheme(local.theme);
   const t=T[local.language];
   const set=(k,v)=>setLocal(s=>({...s,[k]:v}));
@@ -246,7 +269,6 @@ function SettingsScreen({onBack,settings,onSave}) {
 
   return (
     <div style={{minHeight:"100vh",background:th.bg,fontFamily:"'Segoe UI',sans-serif",color:th.text}}>
-      {/* Header */}
       <div style={{background:th.headerBg,borderBottom:`1px solid ${th.border}`,padding:"13px 24px",display:"flex",alignItems:"center",gap:14,position:"sticky",top:0,zIndex:10}}>
         <button onClick={onBack} style={{background:th.surface2,border:`1px solid ${th.border}`,borderRadius:8,color:th.text2,padding:"7px 16px",cursor:"pointer",fontWeight:600,fontSize:13}}>{t.back}</button>
         <span style={{fontWeight:800,fontSize:18,color:th.text}}>{t.settingsTitle}</span>
@@ -254,10 +276,7 @@ function SettingsScreen({onBack,settings,onSave}) {
         {savedMsg&&<span style={{color:"#22c55e",fontWeight:700,fontSize:13}}>{t.saved}</span>}
         <button onClick={handleSave} style={{background:`linear-gradient(135deg,${th.accent},${th.accent2})`,border:"none",borderRadius:10,color:"#fff",padding:"9px 24px",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.saveSettings}</button>
       </div>
-
       <div style={{maxWidth:640,margin:"0 auto",padding:"30px 24px"}}>
-
-        {/* APPEARANCE */}
         <SectionHead title={t.appearance} th={th}/>
         <Card th={th}>
           <SRow label={t.themeLabel} th={th}>
@@ -284,7 +303,6 @@ function SettingsScreen({onBack,settings,onSave}) {
           </SRow>
         </Card>
 
-        {/* AUDIO */}
         <SectionHead title={t.audio} th={th}/>
         <Card th={th}>
           <SRow label={t.soundLabel} th={th}><Toggle value={local.sound} onChange={v=>set("sound",v)} th={th}/></SRow>
@@ -292,13 +310,11 @@ function SettingsScreen({onBack,settings,onSave}) {
           <SRow label={t.volumeLabel} th={th}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <span style={{color:th.text3,fontSize:12,minWidth:32,textAlign:"right"}}>{local.volume}%</span>
-              <input type="range" min={0} max={100} value={local.volume} onChange={e=>set("volume",+e.target.value)}
-                style={{width:120,accentColor:th.accent,cursor:"pointer"}}/>
+              <input type="range" min={0} max={100} value={local.volume} onChange={e=>set("volume",+e.target.value)} style={{width:120,accentColor:th.accent,cursor:"pointer"}}/>
             </div>
           </SRow>
         </Card>
 
-        {/* GAMEPLAY */}
         <SectionHead title={t.gameplay} th={th}/>
         <Card th={th}>
           <SRow label={t.gameSpeedLabel} desc={t.gameSpeedDesc} th={th}>
@@ -316,7 +332,6 @@ function SettingsScreen({onBack,settings,onSave}) {
           </SRow>
         </Card>
 
-        {/* ACCOUNT */}
         <SectionHead title={t.account} th={th}/>
         <Card th={th}>
           <SRow label={t.resetProgress} desc={t.resetProgressDesc} th={th}>
@@ -330,7 +345,6 @@ function SettingsScreen({onBack,settings,onSave}) {
           {resetStep===2&&<div style={{padding:"10px 0",color:"#22c55e",fontWeight:700,fontSize:14}}>{t.resetDoneTxt}</div>}
         </Card>
 
-        {/* PREVIEW */}
         <SectionHead title={t.preview} th={th}/>
         <div style={{background:th.surface,borderRadius:16,border:`1px solid ${th.border}`,padding:20,marginBottom:36}}>
           <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
@@ -343,7 +357,6 @@ function SettingsScreen({onBack,settings,onSave}) {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -354,14 +367,13 @@ function MenuScreen({onNav,player,th,t}) {
   return (
     <div style={{minHeight:"100vh",background:th.bg,fontFamily:"'Segoe UI',sans-serif"}}>
       <div style={{display:"flex",justifyContent:"flex-end",padding:"13px 28px",gap:12,background:th.headerBg,borderBottom:`1px solid ${th.border}`}}>
-        {[{icon:"🔥",k:"streak",c:"#fb923c"},{icon:"💎",k:"gems",c:"#38bdf8"},{icon:"🎫",k:"tickets",c:"#fbbf24"}].map(x=>(
+        {[{icon:"🔥",k:"streak",c:"#fb923c",val:player.streak},{icon:"💎",k:"gems",c:"#38bdf8",val:player.gems},{icon:"🎫",k:"tickets",c:"#fbbf24",val:player.tickets}].map(x=>(
           <div key={x.k} style={{display:"flex",alignItems:"center",gap:6,background:th.surface2,borderRadius:20,padding:"6px 16px",color:x.c,fontWeight:700,fontSize:13}}>
-            {x.icon} {t[x.k==="streak"?"streak":x.k==="gems"?"gem":"ticket"]}: {player[x.k]}
+            {x.icon} {x.k==="streak"?t.streak:x.k==="gems"?t.gem:t.ticket}: {x.val}
           </div>
         ))}
       </div>
       <div style={{display:"flex"}}>
-        {/* Sidebar */}
         <div style={{width:220,minHeight:"calc(100vh - 53px)",background:th.headerBg,borderRight:`1px solid ${th.border}`,padding:"30px 0",display:"flex",flexDirection:"column",alignItems:"center"}}>
           <div style={{fontSize:32,fontWeight:900,color:th.accent,marginBottom:40,letterSpacing:-1}}>Fact<span style={{color:th.accent2}}>Up</span></div>
           {[
@@ -377,22 +389,15 @@ function MenuScreen({onNav,player,th,t}) {
               background:th.surface2,border:`1px solid ${th.border}`,borderRadius:10,
               color:th.text2,fontSize:14,fontWeight:600,cursor:"pointer",
               display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all 0.2s",
-            }}
-              onMouseEnter={e=>{e.currentTarget.style.background=th.accentBg;e.currentTarget.style.borderColor=th.accent;}}
-              onMouseLeave={e=>{e.currentTarget.style.background=th.surface2;e.currentTarget.style.borderColor=th.border;}}
-            >{item.icon} {item.label}</button>
+            }}>{item.icon} {item.label}</button>
           ))}
         </div>
-        {/* Cards */}
         <div style={{flex:1,display:"flex",gap:24,padding:32,alignItems:"flex-start",justifyContent:"center",flexWrap:"wrap"}}>
           {[
             {icon:"💎",title:t.gemShop,desc:t.gemShopDesc,color:"#38bdf8",val:`${player.gems} Gem`},
             {icon:"🎫",title:t.gacha,desc:t.gachaDesc,color:"#f472b6",val:`${player.tickets} Ticket`},
           ].map(c=>(
-            <div key={c.title} style={{flex:"1 1 280px",maxWidth:340,minHeight:380,background:th.surface,borderRadius:18,border:`1px solid ${th.border}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:"pointer",gap:14,padding:28,transition:"border-color 0.2s"}}
-              onMouseEnter={e=>e.currentTarget.style.borderColor=c.color}
-              onMouseLeave={e=>e.currentTarget.style.borderColor=th.border}
-            >
+            <div key={c.title} style={{flex:"1 1 280px",maxWidth:340,minHeight:380,background:th.surface,borderRadius:18,border:`1px solid ${th.border}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:"pointer",gap:14,padding:28,transition:"border-color 0.2s"}}>
               <div style={{fontSize:52}}>{c.icon}</div>
               <div style={{color:c.color,fontWeight:800,fontSize:18}}>{c.title}</div>
               <div style={{color:th.text3,textAlign:"center",fontSize:13,lineHeight:1.6}}>{c.desc}</div>
@@ -425,7 +430,6 @@ function ProfileScreen({onBack,player,th,t}) {
             <button style={{background:"#f59e0b22",border:"1px solid #f59e0b55",color:"#fbbf24",borderRadius:10,padding:"10px 18px",fontWeight:700,fontSize:13,cursor:"pointer"}}>🏆 {t.achievements}</button>
             <button style={{background:"#22c55e22",border:"1px solid #22c55e55",color:"#86efac",borderRadius:10,padding:"10px 18px",fontWeight:700,fontSize:13,cursor:"pointer"}}>🔥 {t.chain}: {player.streak}</button>
           </div>
-          {/* XP */}
           <div style={{marginBottom:22}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
               <span style={{color:th.text3,fontSize:12}}>XP</span><span style={{color:th.text3,fontSize:12}}>{player.xp}/100</span>
@@ -434,7 +438,6 @@ function ProfileScreen({onBack,player,th,t}) {
               <div style={{height:"100%",width:`${player.xp}%`,background:`linear-gradient(90deg,${th.accent},${th.accent2})`,borderRadius:99,transition:"width 0.5s"}}/>
             </div>
           </div>
-          {/* Medals */}
           <div style={{background:th.bg,borderRadius:16,padding:22}}>
             <div style={{color:th.text3,fontWeight:600,marginBottom:14,textAlign:"center",fontSize:13}}>{t.medals}</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:12}}>
@@ -443,7 +446,6 @@ function ProfileScreen({onBack,player,th,t}) {
               ))}
             </div>
           </div>
-          {/* Stats */}
           <div style={{display:"flex",gap:12,marginTop:18}}>
             {[{l:"GEM",v:player.gems,i:"💎",c:"#38bdf8"},{l:"TICKET",v:player.tickets,i:"🎫",c:"#fbbf24"},{l:"STREAK",v:player.streak,i:"🔥",c:"#fb923c"}].map(s=>(
               <div key={s.l} style={{flex:1,background:th.surface2,borderRadius:12,padding:14,textAlign:"center",border:`1px solid ${th.border}`}}>
@@ -478,8 +480,8 @@ function PracticeScreen({onBack,onXP,th,t}) {
     setChecked(true);
     let ok=false;
     if(q.type==="identify_flags") ok=sel.length===q.options.filter(o=>o.correct).length&&sel.every(i=>q.options[i].correct);
-    if(q.type==="choose_source") ok=src!==null&&q.sources[src]?.correct;
-    if(q.type==="verify_methods") ok=methods.length===q.methods.filter(m=>m.correct).length&&methods.every(i=>q.methods[i]?.correct);
+    if(q.type==="choose_source") ok=src!==null&&q.sources[src]&&q.sources[src].correct;
+    if(q.type==="verify_methods") ok=methods.length===q.methods.filter(m=>m.correct).length&&methods.every(i=>q.methods[i]&&q.methods[i].correct);
     if(q.type==="classify_post") ok=verdict===q.correct_verdict;
     setFb(ok?"ok":"fail");
     if(ok) onXP(20);
@@ -566,7 +568,8 @@ function PracticeScreen({onBack,onXP,th,t}) {
               <div style={{flex:"1 1 240px",background:th.bg,borderRadius:14,padding:16}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
                   <div style={{width:34,height:34,borderRadius:"50%",background:th.surface2,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>👩</div>
-                  <div style={{color:th.text3,fontSize:12}}>Người dùng · MXH</div><div style={{marginLeft:"auto",color:th.text3}}>•••</div>
+                  <div style={{color:th.text3,fontSize:12}}>Người dùng · MXH</div>
+                  <div style={{marginLeft:"auto",color:th.text3}}>•••</div>
                 </div>
                 <div style={{background:th.surface,borderRadius:10,padding:12,fontSize:32,textAlign:"center",marginBottom:10}}>{q.post.image}</div>
                 <div style={{color:th.text2,fontSize:13,lineHeight:1.7}}>{q.post.caption}</div>
@@ -717,7 +720,6 @@ function GameScreen({onBack,settings,onXP,th,t}) {
 
   return (
     <div style={{height:"100vh",background:th.bg,fontFamily:"'Segoe UI',sans-serif",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-      {/* HEADER */}
       <div style={{background:th.headerBg,borderBottom:`1px solid ${th.border}`,padding:"9px 16px",display:"flex",alignItems:"center",gap:14,flexShrink:0}}>
         <button onClick={onBack} style={{background:th.surface2,border:`1px solid ${th.border}`,borderRadius:8,color:th.text2,padding:"5px 12px",cursor:"pointer",fontWeight:600,fontSize:12}}>{t.back}</button>
         <div style={{color:th.accent,fontWeight:700,fontSize:13}}>📅 {t.day} {String(date.d).padStart(2,"0")}/{String(date.m).padStart(2,"0")}/{date.y}</div>
@@ -737,9 +739,7 @@ function GameScreen({onBack,settings,onXP,th,t}) {
         </span>
       </div>
 
-      {/* BODY */}
       <div style={{flex:1,display:"flex",overflow:"hidden"}}>
-        {/* LEFT */}
         <div style={{width:190,background:th.surface,borderRight:`1px solid ${th.border}`,padding:14,display:"flex",flexDirection:"column",gap:10,overflowY:"auto"}}>
           <div style={{color:th.accent,fontWeight:700,fontSize:13,borderBottom:`1px solid ${th.border}`,paddingBottom:8}}>{ZONES[selZ].icon} {ZONES[selZ].name}</div>
           {[{l:t.spreadSpeed,v:spreadL},{l:t.influence,v:influL},{l:t.control,v:ctrlL},{l:t.pressure,v:presL}].map(item=>(
@@ -753,15 +753,11 @@ function GameScreen({onBack,settings,onXP,th,t}) {
                 background:ap>=sk.c?th.surface2:th.bg,border:`1px solid ${ap>=sk.c?th.border2:th.border}`,
                 borderRadius:8,color:ap>=sk.c?th.text2:th.text3,fontSize:11,
                 cursor:ap>=sk.c?"pointer":"not-allowed",display:"flex",justifyContent:"space-between",alignItems:"center",transition:"all 0.2s",
-              }}
-                onMouseEnter={e=>ap>=sk.c&&(e.currentTarget.style.borderColor=th.accent)}
-                onMouseLeave={e=>e.currentTarget.style.borderColor=ap>=sk.c?th.border2:th.border}
-              ><span>{sk.l}</span><span style={{color:th.accent2,fontSize:10,fontWeight:700}}>{sk.c} AP</span></button>
+              }}><span>{sk.l}</span><span style={{color:th.accent2,fontSize:10,fontWeight:700}}>{sk.c} AP</span></button>
             ))}
           </div>
         </div>
 
-        {/* MAP */}
         <div style={{flex:1,position:"relative",overflow:"hidden",background:th.mapBg}}>
           <div style={{position:"absolute",inset:0,backgroundImage:`radial-gradient(circle,${th.mapDot} 1px,transparent 1px)`,backgroundSize:"44px 44px"}}/>
           <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}>
@@ -788,14 +784,13 @@ function GameScreen({onBack,settings,onXP,th,t}) {
                 <div style={{width:"58%",height:4,borderRadius:99,background:th.surface2,marginTop:4}}>
                   <div style={{height:"100%",width:`${z.spread}%`,background:c,borderRadius:99,transition:"width 0.5s"}}/>
                 </div>
-                {z.hasAlert&&<div style={{position:"absolute",top:-6,right:-6,background:"#ef4444",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:"#fff",animation:"fu-pulse 1s infinite",boxShadow:"0 0 8px #ef4444"}}>!</div>}
+                {z.hasAlert&&<div style={{position:"absolute",top:-6,right:-6,background:"#ef4444",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:"#fff",boxShadow:"0 0 8px #ef4444"}}>!</div>}
               </div>
             );
           })}
-          {/* News */}
           <div style={{position:"absolute",bottom:14,left:"50%",transform:"translateX(-50%)",display:"flex",gap:10,zIndex:20,flexWrap:"nowrap",maxWidth:"92%"}}>
             {news.map(n=>(
-              <div key={n.uid} style={{background:th.surface,border:"1px solid #ef4444",borderRadius:14,padding:"12px 14px",maxWidth:226,boxShadow:"0 4px 24px #ef444433",animation:"fu-slide 0.3s ease",flexShrink:0}}>
+              <div key={n.uid} style={{background:th.surface,border:"1px solid #ef4444",borderRadius:14,padding:"12px 14px",maxWidth:226,boxShadow:"0 4px 24px #ef444433",flexShrink:0}}>
                 <div style={{color:"#fca5a5",fontSize:11,marginBottom:4}}>{t.newAlert} — {n.platform}</div>
                 <div style={{color:th.text,fontSize:12,marginBottom:10,lineHeight:1.5}}>{n.title}</div>
                 <div style={{display:"flex",gap:8}}>
@@ -807,7 +802,6 @@ function GameScreen({onBack,settings,onXP,th,t}) {
           </div>
         </div>
 
-        {/* RIGHT */}
         <div style={{width:180,background:th.surface,borderLeft:`1px solid ${th.border}`,padding:14,display:"flex",flexDirection:"column",gap:10,overflowY:"auto"}}>
           <div style={{color:th.accent2,fontWeight:700,fontSize:13,borderBottom:`1px solid ${th.border}`,paddingBottom:8}}>🌐 {t.globalStatus}</div>
           {[{l:t.socialInfluence,v:gi()},{l:t.globalSpeed,v:gs()},{l:t.publicPressure,v:gp()},{l:t.systemStatus,v:gss()}].map(item=>(
@@ -829,7 +823,6 @@ function GameScreen({onBack,settings,onXP,th,t}) {
         </div>
       </div>
 
-      {/* FOOTER */}
       <div style={{height:80,background:th.surface,borderTop:`1px solid ${th.border}`,padding:"7px 16px",overflowY:"auto",flexShrink:0}}>
         <div style={{color:th.text3,fontSize:11,marginBottom:4}}>{t.eventLog}</div>
         {[...log].reverse().map((e,i)=>(
@@ -862,7 +855,7 @@ function GameScreen({onBack,settings,onXP,th,t}) {
 }
 
 // ===================== ROOT APP =====================
-export default function App() {
+function App() {
   const [settings,setSettings]=useState({...DEFAULT_SETTINGS});
   const [player,setPlayer]=useState(freshPlayer());
   const [screen,setScreen]=useState("menu");
@@ -894,25 +887,8 @@ export default function App() {
   return <MenuScreen onNav={nav} player={player} th={th} t={t}/>;
 }
 
-// ===================== HTML TEMPLATE =====================
-const htmlTemplate = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FactUp - React Game</title>
-    <link rel="stylesheet" href="style.css"> <!-- You can add your own CSS file here -->
-</head>
-<body>
-    <div id="root"></div>
-    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
-    <script type="text/babel" src="App.js"></script>
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+  </script>
 </body>
 </html>
-`;
-
-// You can use `htmlTemplate` variable to save as an HTML file programmatically or embed it in your application as needed.
